@@ -1,14 +1,23 @@
 package gui;
 
+import model.Sklad;
+import model.Zbozi;
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Obchod {
+    private Sklad sklad;
     private JPanel hlavniPanel;
+    private JPanel panelSkladu;
+    private JTable tabulkaSkladu;
     private JMenuBar nabidka;
 
     public Obchod() {
+        sklad = new Sklad();
+
         vytvorKomponenty();
     }
 
@@ -21,8 +30,10 @@ public class Obchod {
     }
     private void vytvorKomponenty() {
         vytvorNabidku();
+        vytvorPanelSkladu();
 
         hlavniPanel = new JPanel();
+        hlavniPanel.add(panelSkladu);
     }
 
     private void vytvorNabidku() {
@@ -54,6 +65,41 @@ public class Obchod {
         nabidka.add(mnSoubor);
         nabidka.add(mnNapoveda);
     }
+
+    private void vytvorPanelSkladu() {
+        tabulkaSkladu = new JTable();
+        tabulkaSkladu.setModel(sklad);
+        tabulkaSkladu.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tabulkaSkladu.setFillsViewportHeight(true);
+        Docasne.naplnSklad(sklad);
+
+        JScrollPane spTabulkaSkladu = new JScrollPane(tabulkaSkladu);
+
+        JButton btPridej = new JButton("Přidat");
+        btPridej.addActionListener((e -> {
+            sklad.pridejZbozi(new Zbozi("-",0.0f,0));
+        }));
+
+        JButton btSmazat = new JButton("Smazat");
+        btSmazat.addActionListener(e -> {
+            int radek = tabulkaSkladu.getSelectedRow();
+            sklad.smazatZbozi(radek);
+        });
+
+        JButton btSmazVse = new JButton("Smazat vše");
+
+        JPanel pnTlacitka = new JPanel();
+        pnTlacitka.setLayout(new GridLayout(0,1));
+        pnTlacitka.add(btPridej);
+        pnTlacitka.add(btSmazat);
+        pnTlacitka.add(btSmazVse);
+
+        panelSkladu = new JPanel();
+        panelSkladu.setLayout(new BorderLayout());
+        panelSkladu.add(spTabulkaSkladu, BorderLayout.CENTER);
+        panelSkladu.add(pnTlacitka, BorderLayout.EAST);
+    }
+
     public static void vytvorHlavniOkno() {
         JFrame hlavniOkno = new JFrame();
         hlavniOkno.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -2,6 +2,7 @@ package gui;
 
 import model.Sklad;
 import model.Zbozi;
+import serideseri.GsonSerDes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,8 +55,39 @@ public class Obchod {
                 JOptionPane.INFORMATION_MESSAGE
         )));
 
+        JMenuItem miNactiJson = new JMenuItem("Načti JSON");
+        miNactiJson.addActionListener((e) -> {
+            try {
+                JFileChooser dialog = new JFileChooser(".");
+                if (dialog.showOpenDialog(panelSkladu) == JFileChooser.APPROVE_OPTION) {
+                    String soubor = dialog.getSelectedFile().getPath();
+                    sklad.nacti(new GsonSerDes(), soubor);
+                }
+            } catch (Exception exp) {
+                JOptionPane.showMessageDialog(hlavniPanel, "Při načitání souboru v JSON formátu nastala: "
+                        + exp.getLocalizedMessage(), "Chyba ukládání", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        JMenuItem miUlozJson = new JMenuItem("Ulož JSON");
+        miUlozJson.addActionListener((e) -> {
+            try {
+                JFileChooser dialog = new JFileChooser(".");
+            if (dialog.showSaveDialog(panelSkladu) == JFileChooser.APPROVE_OPTION) {
+                String soubor = dialog.getSelectedFile().getPath();
+                sklad.uloz(new GsonSerDes(), soubor);
+            }
+            } catch (Exception exp) {
+                JOptionPane.showMessageDialog(hlavniPanel, "Při ukládání do JSON formátu nastala: "
+                + exp.getLocalizedMessage(), "Chyba ukládání", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+
         JMenu mnSoubor = new JMenu();
         mnSoubor.setText("Soubor");
+        mnSoubor.add(miUlozJson);
+        mnSoubor.add(miNactiJson);
         mnSoubor.add(miUkoncit);
 
         JMenu mnNapoveda = new JMenu("Nápověda");
